@@ -1,0 +1,7 @@
+{
+  "jwtPrivateKey": "vidly_jwtPrivateKey",
+  "email": "vidly_email",
+  "password": "vidly_gmail_pass",
+  "google-client-id": "vidly_google_client_id",
+  "google-client-secret": "vidly_google_client_secret"
+}
