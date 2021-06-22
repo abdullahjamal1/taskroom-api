@@ -19,8 +19,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         minLength: 5,
-        maxLength: 255,
-        unique: true
+        maxLength: 255
     }
 });
 
@@ -68,3 +67,4 @@ function validateGroup(group) {
 
 exports.Group = Group;
 exports.validateGroup = validateGroup;
+exports.userSchema = userSchema;

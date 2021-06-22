@@ -1,14 +1,41 @@
 const mail = require('../startup/mail');
 const config = require('config');
 
+async function sendTaskCompletionNotification(group, task) {
 
-async function sendInvites(members, group, admin) {
+    const emails = group.members.map(m => m.email);
+
+    const mailOptions = {
+        to: emails,
+        subject: `Task completed`,
+        text: `Task ${task.title} is completed `,
+        html: `<p>Task ${task.title} is completed</p>`
+    }
+    await mail.send(mailOptions);
+}
+
+async function sendTaskNotification(group, task) {
+
+    const emails = group.members.map(m => m.email);
+
+    const mailOptions = {
+        to: emails,
+        subject: `Task ${task.title} Added in ${group.title}`,
+        text: `${task.author.name} has added new task, ${task.title} `,
+        html: `<p>${task.author.name} has added new task, ${task.title}</p>
+                <br/> <p><strong>Description:</strong> ${task.description} </p>
+                <br/> <p><strong>Due On:</strong> ${task.dueTime} </p>`
+    }
+    await mail.send(mailOptions);
+}
+
+async function sendGroupRemovalMail(members, group, admin) {
 
     const mailOptions = {
         to: members,
         subject: `Removed from group ${group.title}`,
         text: `${admin.name} has removed you from ${group.title}`,
-        html: '<a href=""><H2></H2></a>'
+        html: `<p> ${admin.name} has removed you from ${group.title}</p>`
     }
     await mail.send(mailOptions);
 }
@@ -54,5 +81,7 @@ module.exports = {
     sendAuthMail,
     sendResetPaswordMail,
     sendInvites,
-    sendRemoveMail
+    sendGroupRemovalMail,
+    sendTaskNotification,
+    sendTaskCompletionNotification
 }

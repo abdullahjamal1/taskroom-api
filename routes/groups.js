@@ -27,7 +27,7 @@ router.get('/:id', [auth, groupMember], async (req, res) => {
 
     if (!group) return res.status(404).send('group not found');
     // from middleware
-    return res.send(req.group);
+    return res.send(group);
 });
 
 // assume all mails are valid
@@ -71,10 +71,6 @@ router.post('/', [auth, validate(validateGroup)], async (req, res) => {
 // update members removed => sendRemoveNotification
 router.put('/:id', [auth, groupAdmin, validate(validateGroup)], async (req, res) => {
 
-    const group = await Group.findById(req.params.id);
-
-    if (!group) return res.status(404).send('group not found');
-
     // diff btw req.group & req.body
     let emails = req.body.members;
 
@@ -82,15 +78,16 @@ router.put('/:id', [auth, groupAdmin, validate(validateGroup)], async (req, res)
     // TODO: return error for invalid emails
     let newMembers = await User.find({ email: { $in: emails } });
 
-    const group = new Group({
+    const group = await Group.findByIdAndUpdate(req.params.id, {
         _id: req.params.id,
         title: req.body.title,
         description: req.body.description,
         admin: req.group.admin,
         members: newMembers,
         theme: req.body.theme
-    });
-    await group.save();
+    }, { new: true });
+
+    if (!group) return res.status(404).send('group not found');
 
     let oldEmails = req.group.members.map(m => m.email);
 
@@ -103,7 +100,7 @@ router.put('/:id', [auth, groupAdmin, validate(validateGroup)], async (req, res)
     let removedEmails = oldEmails.map(m => !emails.includes(m.email));
     if (removedEmails) {
         await User.updateMany({ email: { $in: removedEmails } }, { $pull: { groups: group._id } });
-        mail.sendRemoveMail(removedEmails, group, admin);
+        mail.sendGroupRemovalMail(removedEmails, group, admin);
     }
 
     return res.send(group);
@@ -112,11 +109,10 @@ router.put('/:id', [auth, groupAdmin, validate(validateGroup)], async (req, res)
 // TODO :
 router.delete('/:id', [auth, groupAdmin, validate(validateGroup)], async (req, res) => {
 
-    const group = await Group.findById(req.params.id);
+    const group = await Group.findByIdAndRemove(req.params.id);
 
     if (!group) return res.status(404).send('group not found');
     // delete group
-    await Group.removeById(req.group._id);
     // remove group from users collection
     // delete task
     // delete discussion
