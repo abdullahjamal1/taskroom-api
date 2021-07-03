@@ -66,7 +66,7 @@ async function sendAuthMail(user) {
 
 async function sendResetPaswordMail(user) {
 
-    const url = `${config.get('app-url')}/api/users/reset-password?token=${user.generateMailVerificationToken()}`;
+    const url = `${config.get('frontend-url')}reset-password-change?token=${user.generateMailVerificationToken()}`;
 
     const mailOptions = {
         to: user.email,

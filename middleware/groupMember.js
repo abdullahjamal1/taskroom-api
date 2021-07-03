@@ -19,6 +19,7 @@ module.exports = async function (req, res, next) {
 
     const member = group.members.filter(member => member._id.toHexString() === req.user._id);
 
+    console.log(member);
     if (!member[0]) return res.status(403).send('Access denied');
 
     req.group = group;

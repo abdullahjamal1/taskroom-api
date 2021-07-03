@@ -6,8 +6,14 @@ const { userSchema } = require('./group');
 
 const Comment = mongoose.model('Comments', new mongoose.Schema({
 
-    groupId: mongoose.Schema.Types.ObjectId,
-    TaskId: mongoose.Schema.Types.ObjectId,
+    groupId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    taskId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
     parentId: {
         type: mongoose.Schema.Types.ObjectId,
         required: false

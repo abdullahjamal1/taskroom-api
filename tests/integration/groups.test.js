@@ -81,6 +81,8 @@ describe("/api/groups", () => {
 
             const res = await exec();
 
+            console.log(res.text);
+
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('title', 'description', 'admin',
                 'members', 'theme');

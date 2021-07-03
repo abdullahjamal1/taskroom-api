@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-const themes = ['primary', 'secondary', 'success', 'danger', 'info', 'warning', 'light', 'dark'];
+const themes = ['Primary', 'Secondary', 'Success', 'Danger', 'Info', 'Warning', 'Light', 'Dark'];
 
 const Group = mongoose.model('Groups', new mongoose.Schema({
     title: {

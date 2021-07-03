@@ -1,4 +1,4 @@
-const Group = require('../models/group');
+const { Group } = require('../models/group');
 
 /*
     Description: middleware for resources which only admin of 
@@ -8,7 +8,7 @@ module.exports = async function (req, res, next) {
 
     const group = await Group.findById(req.params.id);
 
-    if (group.admin._id !== req.user._id)
+    if (group.admin._id.toHexString() !== req.user._id)
         return res.status(403).send('Access denied');
 
     req.group = group;

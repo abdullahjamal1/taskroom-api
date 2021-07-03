@@ -60,9 +60,7 @@ router.post('/', [auth, groupMember, validate(validateTask)], async (req, res) =
 */
 router.put('/:id', [auth, groupMember, validate(validateTask)], async (req, res) => {
 
-    const groupId = req.query.groupId;
     const { title, description, dueTime, isCompleted } = req.body;
-    const author = await User.findById(req.user._id);
     let completionTime;
 
     if (isCompleted) {
@@ -71,7 +69,7 @@ router.put('/:id', [auth, groupMember, validate(validateTask)], async (req, res)
     }
 
     const task = await Task.findByIdAndUpdate(req.params.id, {
-        groupId, title, description, dueTime, author, completionTime
+        title, description, dueTime, completionTime
     }, { new: true });
 
     if (!task) return res.status(404).send('task not found');
@@ -82,6 +80,7 @@ router.put('/:id', [auth, groupMember, validate(validateTask)], async (req, res)
 });
 
 /*
+    TODO: implement using transaction
     @param { groupId } @required
 */
 router.delete('/:id', [auth, groupMember], async (req, res) => {

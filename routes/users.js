@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
-const { User, validate, validateEmail, validatePassword } = require('../models/user');
+const { User, validateUser, validateEmail, validatePassword } = require('../models/user');
 const express = require('express');
 const auth = require('../middleware/auth');
 const mail = require('../services/mail');
@@ -14,13 +14,48 @@ router.get('/me', auth, async (req, res) => {
         .select('-password, -authentication_token');
     res.send(user);
 });
+
+/*
+    @Body {name @required  or
+            oldPassword, newPassword @required
+        }
+*/
+// TODO update name in other collections also
+router.put('/:id', auth, async (req, res) => {
+
+    const {name, oldPassword, newPassword} = req.body;
+
+    if(req.params.id !== req.user._id)
+        return res.status(403).send('Access denied');
+
+    if(!(name || (oldPassword && newPassword)))
+        return res.status(404).send('name, oldPassword or newPassword missing');
+
+    let user = await User.findById(req.user._id);
+
+    if(newPassword){
+        const isValid = await bcrypt.compare(oldPassword, user.password);
+    // no previous password or password is valid
+        if(!user.password || isValid){
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(newPassword, salt);
+        }
+    }
+    if(name){
+        user.name = name;
+    }
+    
+    user = await user.save();
+    return res.send(user);
+});
+
 /*
     @body {name, email, password}
 */
 router.post('/register', async (req, res) => {
 
     // validate
-    const { error } = validate(req.body);
+    const { error } = validateUser(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     // user is not already registered
@@ -67,7 +102,7 @@ router.get('/activate', async (req, res) => {
     // Email verified successfully
     return res
         .header('x-auth-token', user.generateAuthToken())
-        .redirect(`${config.get(frontend - url)}login`);
+        .redirect(`${config.get('frontend-url')}login`);
 });
 /*
     @body {email}
@@ -94,7 +129,7 @@ router.post('/reset-password', async (req, res) => {
     @param token
     @body {password}
 */
-router.get('/reset-password', async (req, res) => {
+router.post('/reset-password-change', async (req, res) => {
 
     const token = req.query.token;
     if (!token) return res.status(400).send('No token provided');
@@ -121,10 +156,12 @@ router.get('/reset-password', async (req, res) => {
     // update password
     await user.save();
 
+    console.log(user.generateAuthToken());
     // redirect to frontend login page
+
     return res
-        .header('x-auth-token', user.generateAuthToken())
-        .redirect(`${config.get('frontend-url')}login`);
+        .status(200)
+        .send(user.generateAuthToken());
 });
 
 // TODO @route GET : resend activation mail

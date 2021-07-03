@@ -1,13 +1,13 @@
 {
   "jwtPrivateKey": "1234",
   "jwt-mail-verification-key": "asdf",
-  "app-url": "http://localhost:3000",
+  "app-url": "http://localhost:4000",
   "db": "mongodb://localhost/vidly_tests",
   "email": "test",
   "password": "test",
   "google-client-id": "",
   "google-client-secret": "",
-  "google-callback-url": "http://localhost:3000/api/auth/google/callback",
+  "google-callback-url": "http://localhost:4000/api/auth/google/callback",
   "frontend-url": "http://localhost:3000/",
   "isEmailMock": true
 }

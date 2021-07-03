@@ -14,24 +14,15 @@ describe("/api/tasks", () => {
     let tasks;
     let members;
 
-    const addNewUsers = async () => {
-
+    const loadSampleData = async () => {
 
         admin = new User({ name: 'admin', email: 'admin@gmail.com', avatar_url: 'pic-url-usr1' });
-        await User.collection.insertOne(admin);
-
-        token = admin.generateAuthToken();
-
+        
         members = [
             new User({ name: 'user4', email: 'user4@gmail.com', avatar_url: 'pic-url-usr4' }),
             new User({ name: 'user2', email: 'user2@gmail.com', avatar_url: 'pic-url-usr2' }),
             new User({ name: 'user3', email: 'user3@gmail.com', avatar_url: 'pic-url-usr3' })
         ];
-    }
-    const exec = async () => {
-        await User.collection.insertMany(members);
-
-        members = [...members, admin];
         group = new Group({
             title: "taskroom",
             description: "work flow management portal",
@@ -39,8 +30,6 @@ describe("/api/tasks", () => {
             members,
             theme: 'primary'
         });
-        await Group.collection.insertOne(group);
-
         tasks = [
             new Task({
                 title: 'task1',
@@ -59,6 +48,19 @@ describe("/api/tasks", () => {
                 creationTime: Date.now()
             })
         ];
+    }
+    const insertSampleData = async () => {
+
+        await User.collection.insertOne(admin);
+    
+        token = admin.generateAuthToken();
+
+        await User.collection.insertMany(members);
+
+        members = [...members, admin];
+        group.members = members;
+        
+        await Group.collection.insertOne(group);
         await Task.collection.insertMany(tasks);
     }
 
@@ -76,8 +78,8 @@ describe("/api/tasks", () => {
 
 
         beforeEach(async () => {
-            await addNewUsers();
-            await exec();
+            await loadSampleData();
+            await insertSampleData();
         });
 
         it("should return all tasks for a given group", async () => {
@@ -97,8 +99,8 @@ describe("/api/tasks", () => {
     describe('GET /:id', () => {
 
         beforeEach(async () => {
-            await addNewUsers();
-            await exec();
+            await loadSampleData();
+            await insertSampleData();
         });
         it('should return the task if request is valid', async () => {
 
@@ -137,8 +139,8 @@ describe("/api/tasks", () => {
         }
 
         beforeEach(async () => {
-            await addNewUsers();
-            await exec();
+            await loadSampleData();
+            await insertSampleData();
             task = {
                 title: 'task1',
                 description: 'task1 description',

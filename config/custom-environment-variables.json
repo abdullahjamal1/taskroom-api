@@ -1,7 +1,8 @@
 {
-  "jwtPrivateKey": "vidly_jwtPrivateKey",
-  "email": "vidly_email",
-  "password": "vidly_gmail_pass",
-  "google-client-id": "vidly_google_client_id",
-  "google-client-secret": "vidly_google_client_secret"
+  "jwtPrivateKey": "taskroom_jwtPrivateKey",
+  "email": "taskroom_email",
+  "password": "taskroom_gmail_pass",
+  "google-client-id": "taskroom_google_client_id",
+  "google-client-secret": "taskroom_google_client_secret",
+  "jwt-mail-verification-key": "taskroom_mail_verification_key"
 }
