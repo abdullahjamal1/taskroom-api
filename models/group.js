@@ -50,6 +50,11 @@ const Group = mongoose.model('Groups', new mongoose.Schema({
         enum: themes,
         default: 'primary',
         required: true,
+    },
+    creationTime: {
+        type: Date,
+        required: true,
+        default: Date.now
     }
 }));
 

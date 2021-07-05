@@ -40,11 +40,14 @@ router.get('/:id', [auth, groupMember], async (req, res) => {
 router.post('/', [auth, groupMember, validate(validateTask)], async (req, res) => {
 
     const groupId = req.query.groupId;
-    const { title, description, dueTime } = req.body;
+    const { title, description, dueTime, tags } = req.body;
     const author = await User.findById(req.user._id);
 
+    const timeline = { action: "created", user: author };
+
     const task = new Task({
-        groupId, title, description, dueTime, author
+        groupId, title, description, dueTime, tags,
+        author, status: "To Do", timeline
     });
     await task.save();
 
@@ -56,24 +59,28 @@ router.post('/', [auth, groupMember, validate(validateTask)], async (req, res) =
 /*
     @param { groupId } @required
     @body {title, description, dueTime, isCompleted}
-    TODO: test completionTime
 */
 router.put('/:id', [auth, groupMember, validate(validateTask)], async (req, res) => {
 
-    const { title, description, dueTime, isCompleted } = req.body;
-    let completionTime;
+    let { title, description, dueTime, status, action } = req.body;
 
-    if (isCompleted) {
-        mail.sendTaskCompletionNotification(req.group, task);
-        completionTime = Date.now();
-    }
+    const user = await User.findById(req.user._id);
 
-    const task = await Task.findByIdAndUpdate(req.params.id, {
-        title, description, dueTime, completionTime
+    if (!action)
+        action = "updated";
+    else status = action;
+
+    let timeline = { action, user, date: Date.now() };
+
+    let task = await Task.findByIdAndUpdate(req.params.id, {
+        title, description, dueTime, $push: { timeline }, status
     }, { new: true });
 
     if (!task) return res.status(404).send('task not found');
 
+    if (status === "Done") {
+        mail.sendTaskCompletionNotification(req.group, task);
+    }
     await task.save();
 
     return res.send(task);

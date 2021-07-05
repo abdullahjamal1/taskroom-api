@@ -2,10 +2,24 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 const { userSchema } = require('./group');
 
-// TODO
-
-// a subdocument with updates history
-//  {created, date} {updated, date} {active, date}, {onHold, date}, {completed, date}
+// a subdocument with updates history {action, date, user}
+// user who took the action
+const taskTimeline = new mongoose.Schema({
+    action: {
+        type: String,
+        required: true,
+        enum: ['created', 'updated', 'To Do', 'Doing', 'Done']
+    },
+    date: {
+        type: Date,
+        required: true,
+        default: Date.now()
+    },
+    user: {
+        type: userSchema,
+        required: true
+    }
+})
 
 const Task = mongoose.model('Tasks', new mongoose.Schema({
 
@@ -32,11 +46,16 @@ const Task = mongoose.model('Tasks', new mongoose.Schema({
     },
     dueTime: {
         type: Date,
-        required: true
+        required: false
     },
     // if no completionTime => task is not yet completed
-    completionTime: {
-        type: Date,
+    status: {
+        type: String,
+        enum: ['To Do', 'Doing', 'Done', 'Due'],
+        required: false
+    },
+    tags: {
+        type: [String],
         required: false
     },
     commentsCount: {
@@ -44,6 +63,14 @@ const Task = mongoose.model('Tasks', new mongoose.Schema({
         required: false,
         default: 0,
     },
+    color: {
+        type: String,
+        required: false
+    },
+    timeline: {
+        type: [taskTimeline],
+        required: true
+    }
 }));
 
 function validateTask(task) {
@@ -52,7 +79,9 @@ function validateTask(task) {
         title: Joi.string().min(5).max(50).required(),
         description: Joi.string().min(2).max(1000).required(),
         dueTime: Joi.date().timestamp(), //.min('now'),
-        isCompleted: Joi.boolean().required()
+        status: Joi.string(),
+        action: Joi.string(),
+        tags: Joi.array().items(Joi.string().min(1).max(255)),
     };
 
     return Joi.validate(task, schema);

@@ -87,6 +87,7 @@ router.put('/:id', [auth, groupAdmin, validate(validateGroup)], async (req, res)
     // TODO: return error for invalid emails
     let admin = await User.findById(req.user._id);
     let members = await User.find({ email: { $in: emails } });
+    
     if (!members.includes(admin)) {
         members.push(admin);
     }
