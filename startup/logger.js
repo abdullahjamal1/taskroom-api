@@ -13,10 +13,11 @@ module.exports = winston.createLogger({
         new winston.transports.File({ filename: './logs/error.log', level: 'error' }),
         new winston.transports.File({ filename: './logs/combined.log' }),
         new winston.transports.Console({ level: 'info' }),
-        new winston.transports.MongoDB({ db: 'mongodb://localhost/taskroom' })
+        // new winston.transports.MongoDB({ db: 'mongodb://localhost/taskroom' })
     ],
     exceptionHandlers: [
-        new winston.transports.File({ filename: './logs/exceptions.log' })
+        new winston.transports.File({ filename: './logs/exceptions.log' }),
+        new winston.transports.Console({ level: 'info' }),
     ]
 });
 

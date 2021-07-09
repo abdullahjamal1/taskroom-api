@@ -1,5 +1,6 @@
 const { Group } = require('../models/group');
 
+// TODO: handle for case when groupId and taskId are not related
 /*
     Description: middleware for resources which only members of
     a particular group can access
@@ -19,7 +20,6 @@ module.exports = async function (req, res, next) {
 
     const member = group.members.filter(member => member._id.toHexString() === req.user._id);
 
-    console.log(member);
     if (!member[0]) return res.status(403).send('Access denied');
 
     req.group = group;

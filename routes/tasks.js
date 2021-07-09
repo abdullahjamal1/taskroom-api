@@ -35,7 +35,7 @@ router.get('/:id', [auth, groupMember], async (req, res) => {
 
 /*
     @param { groupId } @required
-    @body {title, description, dueTime, isCompleted}
+    @body {title, description, dueTime, tags}
 */
 router.post('/', [auth, groupMember, validate(validateTask)], async (req, res) => {
 
@@ -58,11 +58,11 @@ router.post('/', [auth, groupMember, validate(validateTask)], async (req, res) =
 
 /*
     @param { groupId } @required
-    @body {title, description, dueTime, isCompleted}
+    @body {title, description, dueTime, tags}
 */
 router.put('/:id', [auth, groupMember, validate(validateTask)], async (req, res) => {
 
-    let { title, description, dueTime, status, action } = req.body;
+    let { title, description, dueTime, status, action, tags } = req.body;
 
     const user = await User.findById(req.user._id);
 
@@ -73,7 +73,7 @@ router.put('/:id', [auth, groupMember, validate(validateTask)], async (req, res)
     let timeline = { action, user, date: Date.now() };
 
     let task = await Task.findByIdAndUpdate(req.params.id, {
-        title, description, dueTime, $push: { timeline }, status
+        title, description, dueTime, $push: { timeline }, status, tags
     }, { new: true });
 
     if (!task) return res.status(404).send('task not found');
@@ -87,7 +87,7 @@ router.put('/:id', [auth, groupMember, validate(validateTask)], async (req, res)
 });
 
 /*
-    TODO: implement using transaction
+    TODO: implement using transaction, delete dependent resources like file upon deletion
     @param { groupId } @required
 */
 router.delete('/:id', [auth, groupMember], async (req, res) => {

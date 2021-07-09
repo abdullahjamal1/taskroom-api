@@ -2,6 +2,31 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 const { userSchema } = require('./group');
 
+const fileSchema = new mongoose.Schema({
+    owner: {
+        type: userSchema,
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    creationTime: {
+        type: Date,
+        required: true,
+        default: Date.now()
+    },
+    location: {
+        type: String,
+        required: true,
+    },
+    size: {
+        type: Number, // in MB's
+        required: true,
+        max: 1000
+    }
+});
+
 // a subdocument with updates history {action, date, user}
 // user who took the action
 const taskTimeline = new mongoose.Schema({
@@ -70,6 +95,10 @@ const Task = mongoose.model('Tasks', new mongoose.Schema({
     timeline: {
         type: [taskTimeline],
         required: true
+    },
+    files: {
+        type: [fileSchema],
+        required: false
     }
 }));
 
