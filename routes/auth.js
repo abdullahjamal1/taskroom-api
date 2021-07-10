@@ -35,7 +35,7 @@ router.get('/google/callback',
         // then send redirect
         const token = req.user.generateAuthToken();
 
-        res.redirect(`${config.get('frontend-url')}callback?token=${token}`);
+        res.redirect(`${config.get('app-url')}callback?token=${token}`);
     });
 
 

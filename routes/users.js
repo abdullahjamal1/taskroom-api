@@ -102,7 +102,7 @@ router.get('/activate', async (req, res) => {
     // Email verified successfully
     return res
         .header('x-auth-token', user.generateAuthToken())
-        .redirect(`${config.get('frontend-url')}login`);
+        .redirect(`${config.get('app-url')}login`);
 });
 /*
     @body {email}

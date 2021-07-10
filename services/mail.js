@@ -53,7 +53,7 @@ async function sendInvites(members, group, admin) {
 
 async function sendAuthMail(user) {
 
-    const url = `${config.get('app-url')}/api/users/activate?token=${user.generateMailVerificationToken()}`;
+    const url = `${config.get('api-url')}/api/users/activate?token=${user.generateMailVerificationToken()}`;
 
     const mailOptions = {
         to: user.email,
@@ -66,7 +66,7 @@ async function sendAuthMail(user) {
 
 async function sendResetPaswordMail(user) {
 
-    const url = `${config.get('frontend-url')}reset-password-change?token=${user.generateMailVerificationToken()}`;
+    const url = `${config.get('app-url')}reset-password-change?token=${user.generateMailVerificationToken()}`;
 
     const mailOptions = {
         to: user.email,

@@ -4,10 +4,13 @@
   "password": "taskroom_gmail_pass",
   "google-client-id": "taskroom_google_client_id",
   "google-client-secret": "taskroom_google_client_secret",
+  "google-callback-url": "taskroom_google_callback_url",
   "jwt-mail-verification-key": "taskroom_mail_verification_key",
-  "db": "",
+  "db": "taskroom_db",
   "aws-access-key-id": "taskroom_aws_access_key_id",
   "aws-secret-access-key": "taskroom_aws_secret_access_key",
   "aws-region": "taskroom_aws_region",
-  "aws-bucket": "taskroom_aws_bucket"
+  "aws-bucket": "taskroom_aws_bucket",
+  "api-url": "taskroom_api_url",
+  "app-url": "taskroom_app_url"
 }
