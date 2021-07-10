@@ -14,7 +14,7 @@ require('./startup/validation')();
 // require('./startup/prod')(app);
 
 // const port = process.env.PORT || 3000;
-const port = 4000;
+const port = 80;
 const server = app.listen(port, () => logger.info(`Listening on port ${port}...`));
 
 
