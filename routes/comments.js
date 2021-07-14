@@ -39,7 +39,6 @@ router.post('/', [auth, groupMember, validate(validateComment)], async (req, res
     if (!taskId) return res.status(400).send('taskId not found in query string');
 
     const task = await Task.findOneAndUpdate({ _id: taskId, groupId }, { $inc: { 'commentsCount': 1 } }, { new: true });
-    console.log(task.commentsCount);
 
     if (!task) return res.send(400).send('invalid groupId or taskId');
 

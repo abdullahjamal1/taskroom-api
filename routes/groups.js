@@ -1,5 +1,7 @@
 const { Group, validateGroup } = require("../models/group");
 const { User } = require("../models/user");
+const { Comment } = require("../models/comment");
+const { Task } = require("../models/task");
 const mail = require("../services/mail");
 const validate = require("../middleware/validate");
 const auth = require("../middleware/auth");
@@ -18,7 +20,7 @@ Fawn.init(mongoose);
 router.get("/", [auth], async (req, res) => {
     const user = await User.findById(req.user._id);
     const groups = await Group.find({ _id: { $in: user.groups } }).select(
-        "-members -description"
+        "-description"
     );
 
     return res.send(groups);
@@ -164,11 +166,12 @@ router.delete("/:id", [auth, groupAdmin], async (req, res) => {
 
     if (!group) return res.status(404).send("group not found");
 
-  // delete group
-  // remove group from users collection
-  // delete task
-  // delete comments
-  // delete files
+    group.members.forEach(async (member) => {
+        await User.findByIdAndUpdate(member._id, { $pull: { groups: group._id } })
+    });
+    await Task.removeMany({ groupId: group._id });
+    await Comment.removeMany({ groupId: group._id });
+    // TODO: delete associated files from s3
 
     return res.send("deleted successfully");
 });

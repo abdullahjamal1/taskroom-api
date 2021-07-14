@@ -16,7 +16,7 @@ router.get('/', [auth, groupMember], async (req, res) => {
 
     const groupId = req.query.groupId;
 
-    const tasks = await Task.find({ groupId });
+    const tasks = await Task.find({ groupId }).select('-description -files');
 
     return res.send(tasks);
 });
@@ -93,7 +93,7 @@ router.put('/:id', [auth, groupMember, validate(validateTask)], async (req, res)
 });
 
 /*
-    TODO: implement using transaction, delete dependent resources like file upon deletion
+    TODO: implement using transaction
     @param { groupId } @required
 */
 router.delete('/:id', [auth, groupMember], async (req, res) => {
@@ -101,6 +101,9 @@ router.delete('/:id', [auth, groupMember], async (req, res) => {
     const task = await Task.findByIdAndRemove(req.params.id);
 
     if (!task) return res.status(404).send('task not found');
+
+    // TODO
+    // delete associated comments and files from s3
 
     return res.send('task deleted successfully');
 });

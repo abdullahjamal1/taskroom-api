@@ -111,7 +111,7 @@ function validateTask(task) {
     const schema = {
         title: Joi.string().min(5).max(50).required(),
         description: Joi.string().min(2).max(1000).required(),
-        dueTime: Joi.date().timestamp(), //.min('now'),
+        dueTime: Joi.date().iso(), // TODO .min('now'),
         status: Joi.string(),
         action: Joi.string(),
         tags: Joi.array().items(Joi.string().min(1).max(255)),

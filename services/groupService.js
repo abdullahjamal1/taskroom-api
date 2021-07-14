@@ -13,7 +13,6 @@ async function joinPendingGroups(user) {
             let group = await Group.findById(g);
             let members = [...group.members];
             members = members.filter(m => m.email !== user.email);
-            console.log("after", members);
             group.members = [...members, user];
             await group.save();
         });

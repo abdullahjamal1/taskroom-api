@@ -36,7 +36,7 @@ router.put('/:id', auth, async (req, res) => {
 
     if(newPassword){
         const isValid = await bcrypt.compare(oldPassword, user.password);
-    // no previous password or password is valid
+    // no password prsent in db for user or password is valid
         if(!user.password || isValid){
             const salt = await bcrypt.genSalt(10);
             user.password = await bcrypt.hash(newPassword, salt);
@@ -45,7 +45,6 @@ router.put('/:id', auth, async (req, res) => {
     if(name){
         user.name = name;
     }
-    
     user = await user.save();
     return res.send(user);
 });

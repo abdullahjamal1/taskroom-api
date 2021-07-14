@@ -11,6 +11,7 @@ const express = require('express');
 const router = express.Router();
 
 /*
+    // TODO: dosnt return a flattened file
      @param { groupId } @required
      @returns  a flattened metadata of all files in a group
 */
@@ -19,8 +20,6 @@ router.get('/', [auth, groupMember], async (req, res) => {
     const groupId = req.query.groupId;
 
     const files = await Task.find({ groupId }).select('files -_id');
-
-    console.log(files.flat());
 
     return res.send(files.flat());
 });

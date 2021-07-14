@@ -28,7 +28,6 @@ const upload = multer({
             cb(null, { fieldName: file.fieldname });
         },
         key: function (req, file, cb) {
-            console.log(file)
             const { groupId, taskId } = req.query;
             const fileName = Date.now() + '-' + file.originalname;
             cb(null, getFileKey(fileName, taskId, groupId));
@@ -45,7 +44,7 @@ async function deleteFile(key, taskId, groupId) {
     catch (err) {
         console.log(err);
     }
-    console.log('file deleted');
+
 }
 
 module.exports = {
