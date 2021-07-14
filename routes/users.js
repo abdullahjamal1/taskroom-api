@@ -6,6 +6,7 @@ const auth = require('../middleware/auth');
 const mail = require('../services/mail');
 const jwt = require('jsonwebtoken');
 const config = require('config');
+const { joinPendingGroups } = require('../services/groupService');
 const router = express.Router();
 
 router.get('/me', auth, async (req, res) => {
@@ -74,6 +75,7 @@ router.post('/register', async (req, res) => {
     res.status(200).send(`verification mail sent successfully to ${user.email}`);
 });
 /*
+    verifies user email from the token sent to the user in mail
     @param: token
 */
 router.get('/activate', async (req, res) => {
@@ -101,10 +103,10 @@ router.get('/activate', async (req, res) => {
 
     // Email verified successfully
     return res
-        .header('x-auth-token', user.generateAuthToken())
-        .redirect(`${config.get('app-url')}login`);
+        .redirect(`${config.get('app-url')}callback?token=${user.generateAuthToken()}`);
 });
 /*
+    sends passsword reset mail to the user
     @body {email}
 */
 router.post('/reset-password', async (req, res) => {
@@ -118,7 +120,7 @@ router.post('/reset-password', async (req, res) => {
 
     // if no user found with email address
     if (!user) return res.status(404).send('Email not found');
-    if (!user.isVerified) return res.status(400).send('Email not verified');
+    // if (!user.isVerified) return res.status(400).send('Email not verified');
 
     // send reset password mail
     mail.sendResetPaswordMail(user);
@@ -128,6 +130,7 @@ router.post('/reset-password', async (req, res) => {
 /*
     @param token
     @body {password}
+    @returns jwt token on success
 */
 router.post('/reset-password-change', async (req, res) => {
 
@@ -153,12 +156,20 @@ router.post('/reset-password-change', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(req.body.password, salt);
 
+    if (!user.isVerified) {
+
+        user.isVerified = true;
+
+        // make user member of all groups of which it received invitation
+        joinPendingGroups(user);
+    }
+
     // update password
     await user.save();
 
     console.log(user.generateAuthToken());
-    // redirect to frontend login page
 
+    // redirect to frontend login page
     return res
         .status(200)
         .send(user.generateAuthToken());

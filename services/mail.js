@@ -1,6 +1,24 @@
 const mail = require('../startup/mail');
 const config = require('config');
 
+/*
+    @Param user: { email}
+    @Param group: {title, admin: {email, name}}
+*/
+async function sendTaskroomInvite(user, title, admin) {
+
+    const url = `${config.get('app-url')}reset-password-change?token=${user.generateMailVerificationToken()}`;
+
+    const mailOptions = {
+        to: user.email,
+        subject: `Group Invitation`,
+        text: `taskroom invitation`,
+        html: `<p>You have been invited by ${admin.email} to join project ${title}. <br/>
+               <a href="${url}"><h6>Click here</h6></a> to verify your email and join taskroom. </p>`
+    }
+    await mail.send(mailOptions);
+}
+
 async function sendTaskCompletionNotification(group, task) {
 
     const emails = group.members.map(m => m.email);
@@ -16,15 +34,15 @@ async function sendTaskCompletionNotification(group, task) {
 
 async function sendTaskNotification(group, task) {
 
-    const emails = group.members.map(m => m.email);
+    // only verified members receive task notification
+    const emails = group.members.filter(member => member.isVerified).map(m => m.email);
 
     const mailOptions = {
         to: emails,
-        subject: `Task ${task.title} Added in ${group.title}`,
+        subject: `New task posted in ${group.title}`,
         text: `${task.author.name} has added new task, ${task.title} `,
-        html: `<p>${task.author.name} has added new task, ${task.title}</p>
-                <br/> <p><strong>Description:</strong> ${task.description} </p>
-                <br/> <p><strong>Due On:</strong> ${task.dueTime} </p>`
+        html: `<p>${task.author.name} posted a new task, ${task.title} in ${group.title} </p>
+                <br/> <p><strong>Description:</strong> ${task.description} </p>`
     }
     await mail.send(mailOptions);
 }
@@ -40,13 +58,13 @@ async function sendGroupRemovalMail(members, group, admin) {
     await mail.send(mailOptions);
 }
 
-async function sendInvites(members, group, admin) {
+async function sendJoiningNotification(members, group, admin) {
 
     const mailOptions = {
         to: members,
-        subject: "Group Invitation",
-        text: `${admin.name} has invited you to join a new group, ${group.title}`,
-        html: '<a href=""><H2>view group</H2></a>'
+        subject: "Joined new group",
+        text: `${admin.email} has invited you to join a new group, ${group.title}`,
+        html: `${admin.email} added you in a new group, ${group.title} <br/> <a href="${config.get('app-url')}groups/${group._id}"><H2>view group</H2></a>`,
     }
     await mail.send(mailOptions);
 }
@@ -80,8 +98,9 @@ async function sendResetPaswordMail(user) {
 module.exports = {
     sendAuthMail,
     sendResetPaswordMail,
-    sendInvites,
+    sendJoiningNotification,
     sendGroupRemovalMail,
     sendTaskNotification,
-    sendTaskCompletionNotification
+    sendTaskCompletionNotification,
+    sendTaskroomInvite
 }

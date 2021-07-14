@@ -20,7 +20,8 @@ const userSchema = new mongoose.Schema({
         required: true,
         minLength: 5,
         maxLength: 255
-    }
+    },
+    isVerified: Boolean
 });
 
 const themes = ['Primary', 'Secondary', 'Success', 'Danger', 'Info', 'Warning', 'Light', 'Dark'];
@@ -63,10 +64,9 @@ function validateGroup(group) {
     const schema = {
         title: Joi.string().min(2).max(255).required(),
         description: Joi.string().min(2).max(1000).required(),
-        members: Joi.array().items(Joi.string().min(5).max(255).required().email()),
+        members: Joi.array().items(Joi.string().min(5).max(255).email()).unique(),
         theme: Joi.string().valid(themes),
     };
-
     return Joi.validate(group, schema);
 }
 

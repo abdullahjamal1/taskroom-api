@@ -10,8 +10,22 @@ const express = require('express');
 
 const router = express.Router();
 
-// TODO: change implementation later
-// add size constraint
+/*
+     @param { groupId } @required
+     @returns  a flattened metadata of all files in a group
+*/
+router.get('/', [auth, groupMember], async (req, res) => {
+
+    const groupId = req.query.groupId;
+
+    const files = await Task.find({ groupId }).select('files -_id');
+
+    console.log(files.flat());
+
+    return res.send(files.flat());
+});
+
+// TODO  add size constraint
 /*
     @param { groupId, taskId } @required
     @body {file }
@@ -39,7 +53,7 @@ router.post('/', [auth, groupMember, upload.single('file')], async (req, res) =>
 
 
 /*
-    TODO: implement using transaction, delete dependent resources like file upon deletion
+    TODO: implement using transaction
     @param { groupId, taskId } @required
 */
 router.delete('/:id', [auth, groupMember], async (req, res) => {

@@ -43,12 +43,12 @@ router.post('/login', validate(validateLogin), async (req, res) => {
 
     // validating email
     let user = await User.findOne({ email: req.body.email });
-    if (!user) return res.status(400).send('Invalid email or password');
+    if (!user || !user.password || !user.isVerified) return res.status(400).send('Invalid email or password');
 
     // validating password
     // deny if password is not set ( as in oauth)
     const validPassword = await bcrypt.compare(req.body.password, user.password);
-    if (!validPassword || !user.password) return res.status(400).send('Invalid email or password');
+    if (!validPassword) return res.status(400).send('Invalid email or password');
 
     // check if email is verified
     if (!user.isVerified) {

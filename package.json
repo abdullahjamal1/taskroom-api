@@ -13,6 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-cloudwatch-events": "^3.21.0",
+    "@aws-sdk/client-eventbridge": "^3.21.0",
     "@aws-sdk/client-s3": "^3.20.0",
     "@hapi/joi": "^15.0.3",
     "aws-sdk": "^2.941.0",

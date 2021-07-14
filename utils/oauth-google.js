@@ -1,7 +1,10 @@
+const { joinPendingGroups } = require('../services/groupService');
+const { User } = require('../models/user');
+
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const config = require('config');
-const { User } = require('../models/user');
+
 // Use the GoogleStrategy within Passport.
 //   Strategies in Passport require a `verify` function, which accept
 //   credentials (in this case, an accessToken, refreshToken, and Google
@@ -20,6 +23,12 @@ module.exports = function () {
             const existingUser = await User.findOne({ email: profile.emails[0].value });
 
             if (existingUser) {
+                if (!existingUser.isVerified) {
+
+                    await User.findByIdAndUpdate(existingUser._id, { isVerified: true });
+                    // make user member of all groups of which it received invitation
+                    joinPendingGroups(existingUser);
+                }
                 return done(null, existingUser);
             }
             const user = await new User({

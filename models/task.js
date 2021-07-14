@@ -85,7 +85,7 @@ const Task = mongoose.model('Tasks', new mongoose.Schema({
     },
     commentsCount: {
         type: Number,
-        required: false,
+        required: true,
         default: 0,
     },
     color: {
@@ -99,6 +99,10 @@ const Task = mongoose.model('Tasks', new mongoose.Schema({
     files: {
         type: [fileSchema],
         required: false
+    },
+    collaborators: {
+        type: [userSchema],
+        required: false
     }
 }));
 
@@ -111,6 +115,7 @@ function validateTask(task) {
         status: Joi.string(),
         action: Joi.string(),
         tags: Joi.array().items(Joi.string().min(1).max(255)),
+        collaborators: Joi.array().items(Joi.string().min(5).max(255).email()).unique()
     };
 
     return Joi.validate(task, schema);
