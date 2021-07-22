@@ -1,17 +1,8 @@
 const express = require('express')
 const multer = require('multer')
 const multerS3 = require('multer-s3')
-// const { s3Client } = require("./aws/libs/s3Client");
-const aws = require('aws-sdk');
-const config = require('config');
 
-aws.config.update({
-    // credentials: fromIni({ profile: 'admin_jamal' }),
-    secretAccessKey: config.get('aws-secret-access-key'),
-    accessKeyId: config.get('aws-access-key-id'),
-    region: config.get('aws-region')
-});
-
+const {aws} = require('./libs/client');
 const s3 = new aws.S3();
 
 function getFileKey(fileName, taskId, groupId) {
