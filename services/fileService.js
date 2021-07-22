@@ -4,6 +4,7 @@ const multerS3 = require('multer-s3')
 
 const {aws} = require('./libs/client');
 const s3 = new aws.S3();
+const config = require('config');
 
 function getFileKey(fileName, taskId, groupId) {
     return `group-${groupId}/task-${taskId}/${fileName}`;
