@@ -6,7 +6,7 @@ const auth = require('../middleware/auth');
 const mail = require('../services/mail');
 const jwt = require('jsonwebtoken');
 const config = require('config');
-const { joinPendingGroups } = require('../services/groupService');
+const { joinPendingGroups, updateUsersNotificationForGroups } = require('../services/groupService');
 const router = express.Router();
 
 router.get('/me', auth, async (req, res) => {
@@ -17,6 +17,7 @@ router.get('/me', auth, async (req, res) => {
 });
 
 /*
+    Description: updates name, password and isNotificationEnabled or any of the mentioned.
     @Body {name @required  or
             oldPassword, newPassword @required
         }
@@ -24,13 +25,13 @@ router.get('/me', auth, async (req, res) => {
 // TODO update name in other collections also
 router.put('/:id', auth, async (req, res) => {
 
-    const {name, oldPassword, newPassword} = req.body;
+    const { name, oldPassword, newPassword, isNotificationEnabled } = req.body;
 
     if(req.params.id !== req.user._id)
         return res.status(403).send('Access denied');
 
-    if(!(name || (oldPassword && newPassword)))
-        return res.status(404).send('name, oldPassword or newPassword missing');
+    if (!((isNotificationEnabled === false) || isNotificationEnabled || name || (oldPassword && newPassword)))
+        return res.status(404).send('name, oldPassword or newPassword or isNotificationEnabled is missing');
 
     let user = await User.findById(req.user._id);
 
@@ -45,7 +46,13 @@ router.put('/:id', auth, async (req, res) => {
     if(name){
         user.name = name;
     }
+    if (isNotificationEnabled === false || isNotificationEnabled) {
+        user.isNotificationEnabled = isNotificationEnabled;
+        updateUsersNotificationForGroups(user);
+    }
+
     user = await user.save();
+
     return res.send(user);
 });
 

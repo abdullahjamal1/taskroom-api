@@ -19,15 +19,31 @@ async function sendTaskroomInvite(user, title, admin) {
     await mail.send(mailOptions);
 }
 
-async function sendTaskCompletionNotification(group, task) {
+async function sendTaskUpdationNotification(group, task) {
 
-    const emails = group.members.map(m => m.email);
+    // only verified members receive task notification
+    const emails = group.members
+                        .filter(member => member.isVerified && member.isNotificationEnabled)
+                        .map(m => m.email);
+
+    let timeline = task.timeline[task.timeline.length - 1];
+    const { action, user } = timeline;
+
+    let html;
+    if (action === 'updated') {
+        html = `<p>Task ${task.title} is updated by ${user.name}(${user.email}) </p>`;
+    }
+    else {
+        html = `<p>Task ${task.title} is moved to <strong>${action}</strong> column by ${user.name}(${user.email})</p>`;
+    }
+
+    
 
     const mailOptions = {
         to: emails,
-        subject: `Task completed`,
-        text: `Task ${task.title} is completed `,
-        html: `<p>Task ${task.title} is completed</p>`
+        subject: `Task ${task.title} updated`,
+        text: `Task ${task.title} is completed`,
+        html
     }
     await mail.send(mailOptions);
 }
@@ -35,7 +51,9 @@ async function sendTaskCompletionNotification(group, task) {
 async function sendTaskNotification(group, task) {
 
     // only verified members receive task notification
-    const emails = group.members.filter(member => member.isVerified).map(m => m.email);
+    const emails = group.members
+                        .filter(member => member.isVerified && member.isNotificationEnabled)
+                        .map(m => m.email);
 
     const mailOptions = {
         to: emails,
@@ -63,7 +81,7 @@ async function sendJoiningNotification(members, group, admin) {
     const mailOptions = {
         to: members,
         subject: "Joined new group",
-        text: `${admin.email} has invited you to join a new group, ${group.title}`,
+        text: `${admin.email} added you in a new group, ${group.title}`,
         html: `${admin.email} added you in a new group, ${group.title} <br/> <a href="${config.get('app-url')}groups/${group._id}"><H2>view group</H2></a>`,
     }
     await mail.send(mailOptions);
@@ -101,6 +119,6 @@ module.exports = {
     sendJoiningNotification,
     sendGroupRemovalMail,
     sendTaskNotification,
-    sendTaskCompletionNotification,
+    sendTaskUpdationNotification,
     sendTaskroomInvite
 }

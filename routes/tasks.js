@@ -84,9 +84,8 @@ router.put('/:id', [auth, groupMember, validate(validateTask)], async (req, res)
 
     if (!task) return res.status(404).send('task not found');
 
-    if (status === "Done") {
-        mail.sendTaskCompletionNotification(req.group, task);
-    }
+    mail.sendTaskUpdationNotification(req.group, task);
+
     await task.save();
 
     return res.send(task);

@@ -19,6 +19,13 @@ async function joinPendingGroups(user) {
     }
 }
 
+async function updateUsersNotificationForGroups(user) {
+
+    await Group.updateMany({ 'members.email': user.email },
+        { $set: { 'members.$.isNotificationEnabled': user.isNotificationEnabled } });
+}
+
 module.exports = {
-    joinPendingGroups
+    joinPendingGroups,
+    updateUsersNotificationForGroups
 }

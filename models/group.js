@@ -21,7 +21,8 @@ const userSchema = new mongoose.Schema({
         minLength: 5,
         maxLength: 255
     },
-    isVerified: Boolean
+    isVerified: Boolean,
+    isNotificationEnabled: Boolean
 });
 
 const themes = ['Primary', 'Secondary', 'Success', 'Danger', 'Info', 'Warning', 'Light', 'Dark'];

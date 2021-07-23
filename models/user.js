@@ -35,7 +35,11 @@ const userSchema = new mongoose.Schema({
     },
     isVerified: Boolean,
     isAdmin: Boolean,
-
+    isNotificationEnabled: {
+        type: Boolean,
+        required: true,
+        default: true
+    }
     // roles: [],
     // operations: []
 });
