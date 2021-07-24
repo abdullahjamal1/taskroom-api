@@ -56,6 +56,7 @@ router.post("/", [auth, validate(validateGroup)], async (req, res) => {
     // find all registered users
     let members = await User.find({ email: { $in: emails } });
     const verifiedEmails = members.map((m) => m.email);
+    const registeredMembers = [...members];
     members.push(admin);
 
     // find all non-registered users
@@ -72,7 +73,7 @@ router.post("/", [auth, validate(validateGroup)], async (req, res) => {
 
   // send invitation mail to all members
     if (verifiedEmails.length > 0)
-        mail.sendJoiningNotification(verifiedEmails, group, admin);
+        mail.sendJoiningNotification(registeredMembers, group, admin);
 
     // admin is also member of the group and should not receive group joining notification
     emails.push(admin.email);
@@ -137,7 +138,8 @@ router.put("/:id", [auth, groupAdmin, validate(validateGroup)], async (req, res)
             { email: { $in: newEmails } },
             { $push: { groups: group._id } }
         );
-        mail.sendJoiningNotification(newEmails, group, admin);
+        const newMembers = members.filter(m => newEmails.includes(m.email));
+        mail.sendJoiningNotification(newMembers, group, admin);
     }
 
     // find emails of removed users
@@ -152,7 +154,8 @@ router.put("/:id", [auth, groupAdmin, validate(validateGroup)], async (req, res)
             { email: { $in: removedEmails } },
             { $pull: { groups: group._id } }
         );
-        mail.sendGroupRemovalMail(removedEmails, group, admin);
+        const removedMembers = members.filter(m => removedEmails.includes(m.email));
+        mail.sendGroupRemovalMail(removedMembers, group, admin);
     }
 
     return res.send(group);
