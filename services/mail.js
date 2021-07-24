@@ -12,7 +12,7 @@ function sendToVerified(members, mailOptions) {
     const notificationTogglingUrl = `${config.get('app-url')}settings`;
     mailOptions.html = `${mailOptions.html} <br><hr/> 
                         <small>To unsubscribe from receiving notifications from TaskRoom
-                         <a href="${url}">click here</a> </small>`
+                         <a href="${notificationTogglingUrl}">click here</a> </small>`
     members
         .filter(member => member.isVerified && member.isNotificationEnabled)
         .map(m => m.email)
