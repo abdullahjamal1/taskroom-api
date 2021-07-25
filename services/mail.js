@@ -9,15 +9,16 @@ const config = require('config');
 */
 function sendToVerified(members, mailOptions) {
 
+    console.log('sending mail..');
     const notificationTogglingUrl = `${config.get('app-url')}settings`;
     mailOptions.html = `${mailOptions.html} <br><hr/> 
-                        <small>To unsubscribe from receiving notifications from TaskRoom
+                        <small>To unsubscribe from receiving TaskRoom notifications
                          <a href="${notificationTogglingUrl}">click here</a> </small>`
     members
         .filter(member => member.isVerified && member.isNotificationEnabled)
         .map(m => m.email)
         .forEach(email => {
-            mailOptions.to = email;
+            mailOptions.to = [email];
             mail.send(mailOptions);
         });
 }
@@ -57,7 +58,7 @@ function sendTaskUpdationNotification(group, task) {
 
     const mailOptions = {
         subject: `Task ${task.title} updated`,
-        text: `Task ${task.title} is completed`,
+        text: `Task ${task.title} updated`,
         html
     }
     sendToVerified(group.members, mailOptions);
@@ -77,6 +78,8 @@ function sendTaskNotification(group, task) {
 
 function sendGroupRemovalMail(members, group, admin) {
 
+    console.log('removal notification sent to', members);
+
     const mailOptions = {
         subject: `Removed from group ${group.title}`,
         text: `${admin.name} has removed you from ${group.title}`,
@@ -87,6 +90,8 @@ function sendGroupRemovalMail(members, group, admin) {
 }
 
 function sendJoiningNotification(members, group, admin) {
+
+    console.log('joining notification sent to', members);
 
     const mailOptions = {
         subject: "Joined new group",

@@ -18,11 +18,13 @@ async function send(options) {
         return null;
     }
 
+    console.log(options);
+
     const { to, cc, text, subject, html: body } = options;
     // Create sendEmail params 
     const params = {
         Destination: { /* required */
-            CcAddresses: cc,
+            CcAddresses: [],
             ToAddresses: to,
         },
         Message: { /* required */

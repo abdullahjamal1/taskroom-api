@@ -71,6 +71,8 @@ router.post("/", [auth, validate(validateGroup)], async (req, res) => {
         title, description, admin, members, theme,
     });
 
+
+    console.log(registeredMembers);
   // send invitation mail to all members
     if (verifiedEmails.length > 0)
         mail.sendJoiningNotification(registeredMembers, group, admin);
@@ -128,10 +130,13 @@ router.put("/:id", [auth, groupAdmin, validate(validateGroup)], async (req, res)
     // req.group added in middleware
     let oldEmails = req.group.members.map((m) => m.email);
 
+    // admin is always member of group
+    if (!emails.includes(admin.email)) {
+        emails.push(admin.email);
+    }
+
     // find emails of newly added users
-    let newEmails = emails.filter((m) => {
-        if (!oldEmails.includes(m)) return m;
-    });
+    let newEmails = emails.filter((m) => !oldEmails.includes(m));
     // join newly added users to the group and send joining notification
     if (newEmails.length > 0) {
         await User.updateMany(
@@ -143,18 +148,18 @@ router.put("/:id", [auth, groupAdmin, validate(validateGroup)], async (req, res)
     }
 
     // find emails of removed users
-    let removedEmails = oldEmails.filter((m) => {
-        if (!emails.includes(m)) {
-            return m;
-        }
-    });
+    let removedEmails = oldEmails.filter((m) => !emails.includes(m));
     // unenroll removed users from group and send them group removal notification
     if (removedEmails.length > 0) {
         await User.updateMany(
             { email: { $in: removedEmails } },
             { $pull: { groups: group._id } }
         );
-        const removedMembers = members.filter(m => removedEmails.includes(m.email));
+        console.log('removed emails are', removedEmails);
+        const removedMembers = req.group.members.filter(m => removedEmails.includes(m.email));
+        console.log('members are', req.group.members);
+        console.log('removed members are', removedMembers);
+
         mail.sendGroupRemovalMail(removedMembers, group, admin);
     }
 
@@ -172,8 +177,9 @@ router.delete("/:id", [auth, groupAdmin], async (req, res) => {
     group.members.forEach(async (member) => {
         await User.findByIdAndUpdate(member._id, { $pull: { groups: group._id } })
     });
-    await Task.removeMany({ groupId: group._id });
-    await Comment.removeMany({ groupId: group._id });
+
+    await Task.deleteMany({ groupId: group._id });
+    await Comment.deleteMany({ groupId: group._id });
     // TODO: delete associated files from s3
 
     return res.send("deleted successfully");

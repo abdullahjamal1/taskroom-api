@@ -103,7 +103,6 @@ router.delete('/:id', [auth, groupMember], async (req, res) => {
 
     // TODO
     // delete associated comments and files from s3
-
     return res.send('task deleted successfully');
 });
 
