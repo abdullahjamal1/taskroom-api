@@ -9,7 +9,7 @@
  HTML, CSS, JavaScript, Material-UI, MERN(MongoDB, ExpressJs, ReactJs, NodeJs), AWS(EBS, S3, SES, SNS)
 
 ## High level Architecture
-[aws-architecture](https://github.com/aj941ga/TaskRoom-frontend/blob/main/public/taskroom-aws-architecture.png)
+![aws-architecture](https://github.com/aj941ga/TaskRoom-frontend/blob/main/public/taskroom-aws-architecture.png)
 
 ## Application Demo
 Note: Simple Email Service is currently in sandbox mode so mailing features are restricted to only console verified email-addresses.
