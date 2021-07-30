@@ -2,7 +2,9 @@
 ## taskroom frontend => [https://github.com/aj941ga/TaskRoom-frontend](https://github.com/aj941ga/TaskRoom-frontend)
 
 ● A project management portal for agile teams.
+
 ● Supports kanban board, collaborations, discussions, timelines and project file uploads.
+
 ● Supports mailing functionalities for handling invitations, notifications, bounces and complaints.
 
 ## Technologies used
