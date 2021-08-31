@@ -14,7 +14,7 @@
 ![aws-architecture](https://github.com/aj941ga/TaskRoom-frontend/blob/main/public/taskroom-aws-architecture.png)
 
 ## Application Demo
-Note: Simple Email Service is currently in sandbox mode so mailing features are restricted to only console verified email-addresses.
+Note: Simple Email Service is currently in sandbox mode so mailing features are restricted to only aws console verified email-addresses.
 [TaskRoom](https://www.taskroom.cloud/)
  ________________________________________________________________________________________________________
 ## Running locally
