@@ -9,6 +9,9 @@
 
 ## Technologies used
  HTML, CSS, JavaScript, Material-UI, MERN(MongoDB, ExpressJs, ReactJs, NodeJs), AWS(EBS, S3, SES, SNS)
+ 
+## TaskRoom Desktop View
+![taskroom-desktop-view](https://github.com/aj941ga/TaskRoom-frontend/blob/main/public/taskroom-desktop-view.png)
 
 ## High level Architecture
 ![aws-architecture](https://github.com/aj941ga/TaskRoom-frontend/blob/main/public/taskroom-aws-architecture.png)
